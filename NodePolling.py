@@ -1,29 +1,54 @@
+from paramiko imoport socket
 
-@staticmethod
-def __isSocketActive(host,port):
-	s = socket()
-try:
-	s.connect((host,port))
-except socket.error as e:
-	return False
-else:
-	return True
-
+class PollSocket(object):
+	def __init__(sleepTime,timeout):
+		self.__sleepTime = sleepTime
+		self.__timeout   = timeout
 	
-@staticmethod
-def pollSocket(host,port):
-
-	#we will be polling after every 10 seconds and will wait for maximum 10 minutes.
-	sleepTime = 10 # In seconds
+	@property
+	def sleepTime(self):
+		return self.__sleepTime
 	
-	nMinutesToWait = 10 #In minutes
+	@property
+	def timeout(self):
+		return self.__timeout
 	
-	counter = int(60/sleepTime) * nMinutesToWait 
-	
-	for i in range(counter):
-		if Utility.__isSocketActive(host,port):
-			return True
+	@__sleepTime.setter
+	def sleepTime(self,val):
+		self.sleepTime = val
+		
+	@__timeout.setter
+	def timeout(self,val):
+		self.timeout = val
+		
+	@staticmethod
+	def __isSocketActive(host,port):
+		s = socket()
+		try:
+			s.connect((host,port))
+		except socket.error as e:
+			return False
 		else:
-			#wait for 10 seconds.
-			time.sleep(10)
-	return False
+			return True
+
+	
+
+	def pollSocket(host,port):
+		counter = int(60/self.sleepTime) * self.nMinutesToWait 
+	
+		for i in range(counter):
+			if Utility.__isSocketActive(host,port):
+				return True
+			else:
+				time.sleep(sleepTime)
+		return False
+
+	
+if __name__=="__main__":
+	#sleepTime in seconds and timeout in minutes.
+	p = PollSocket(10,6)
+	if p.pollSocket("localhost",8080):
+		print("Success")
+	else:
+		print("Failure")
+	
